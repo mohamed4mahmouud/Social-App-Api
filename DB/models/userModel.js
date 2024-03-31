@@ -8,10 +8,10 @@ const userSchema = new mongoose.Schema({
     max: [25, "Too long name"],
   },
 
-  userName:{
-    type:String,
-    required:[true , "User must have a username"],
-    unique:[true,'Username must be unique'],
+  userName: {
+    type: String,
+    required: [true, "User must have a username"],
+    unique: [true, "Username must be unique"],
     min: [5, "Too short username"],
     max: [25, "Too long username"],
   },
@@ -26,6 +26,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "User must have a password"],
     minLength: [8, "Too Short password"],
+  },
+  confirmEmail: {
+    type: Boolean,
+    default: false,
   },
 });
 
