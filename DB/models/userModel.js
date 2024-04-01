@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "User must have a name"],
-    min: [5, "Too short name"],
+    min: [3, "Too short name"],
     max: [25, "Too long name"],
   },
 

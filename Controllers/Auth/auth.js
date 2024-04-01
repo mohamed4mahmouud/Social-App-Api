@@ -51,11 +51,12 @@ export const login = asyncHandler(async (req, res, next) => {
 
   const user = await userModel.findOne({ email });
 
-   //check if user exist or not
-   if (!user || !(await bcrypt.compare(password, user.password))) {
+  //check if user exist or not
+  if (!user || !(await bcrypt.compare(password, user.password))) {
     return next(new ApiError("Incorrect email or password", 401));
   }
 
+  //check user's confirmEmail
   if (!user.confirmEmail) {
     return next(new ApiError("Please Confirm your email", 400));
   }
@@ -64,3 +65,39 @@ export const login = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({ message: "success", accessToken: token });
 });
+
+export const protect = asyncHandler(async (req, res, next) => {
+  let token;
+
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+  }
+
+  //check if token exist
+  if (!token) {
+    return next(new ApiError("You are nor logged in", 401));
+  }
+
+  //verify token
+  const decoded = Jwt.verify(token, process.env.SECRET_KEY);
+
+  if (!decoded) {
+    return next(new ApiError("Invalid token", 400));
+  }
+
+  const currentUser = await userModel.findById(decoded.id);
+
+  if (!currentUser) {
+    return next(
+      new ApiError("The user belonging to this token does no longer exist", 401)
+    );
+  }
+
+  req.user = currentUser;
+  next();
+});
+
+
