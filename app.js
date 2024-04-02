@@ -13,6 +13,7 @@ app.use(express.json());
 dbConnect();
 
 app.use("/api/v1/auth", allRoutes.authRouter);
+app.use("/api/v1/post", allRoutes.postRouter);
 
 app.all("*", (req, res, next) => {
   next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400));
