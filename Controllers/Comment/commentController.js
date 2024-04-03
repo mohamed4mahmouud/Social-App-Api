@@ -6,8 +6,9 @@ import ApiError from "../../utils/ApiError.js";
 // @route /api/v1/post/postId/comment
 // @access public
 export const getAllComments = asyncHandler(async (req, res, next) => {
+  const limit = req.query.limit || 5;
   const { postId } = req.params;
-  const comments = await commentModel.find({ post: postId });
+  const comments = await commentModel.find({ post: postId }).limit(5);
 
   if (!comments.length) {
     return next(new ApiError("No comments for this post", 404));
