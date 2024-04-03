@@ -14,6 +14,7 @@ dbConnect();
 
 app.use("/api/v1/auth", allRoutes.authRouter);
 app.use("/api/v1/post", allRoutes.postRouter);
+app.use("/api/v1/comment", allRoutes.commentRouter);
 
 app.all("*", (req, res, next) => {
   next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400));

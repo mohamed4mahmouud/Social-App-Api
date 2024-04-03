@@ -1,6 +1,7 @@
 import { Router } from "express";
 import * as postController from "../Controllers/Post/post.js";
 import * as authController from "../Controllers/Auth/auth.js";
+import commentRouter from "./comment.routes.js";
 import {
   createPostValidator,
   updatePostValidator,
@@ -8,6 +9,8 @@ import {
 } from "../utils/validators/postValidator.js";
 
 const router = Router();
+
+router.use("/:postId/comment", commentRouter);
 
 router
   .route("/")
