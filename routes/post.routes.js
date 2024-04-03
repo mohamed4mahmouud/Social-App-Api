@@ -2,6 +2,7 @@ import { Router } from "express";
 import * as postController from "../Controllers/Post/post.js";
 import * as authController from "../Controllers/Auth/auth.js";
 import commentRouter from "./comment.routes.js";
+import { uploadImages } from "../utils/multer.js";
 import {
   createPostValidator,
   updatePostValidator,
@@ -15,12 +16,22 @@ router.use("/:postId/comment", commentRouter);
 router
   .route("/")
   .get(postController.getAllPosts)
-  .post(createPostValidator, authController.protect, postController.createPost);
+  .post(
+    authController.protect,
+    uploadImages,
+    createPostValidator,
+    postController.createPost
+  );
 
 router
   .route("/:id")
   .get(checkIdValidator, postController.getPost)
-  .put(updatePostValidator, authController.protect, postController.updatePost)
-  .delete(checkIdValidator, authController.protect, postController.deletePost);
+  .put(
+    authController.protect,
+    uploadImages,
+    updatePostValidator,
+    postController.updatePost
+  )
+  .delete(authController.protect, checkIdValidator, postController.deletePost);
 
 export default router;

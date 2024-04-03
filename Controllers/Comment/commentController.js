@@ -2,6 +2,9 @@ import commentModel from "../../DB/models/commentModel.js";
 import asyncHandler from "express-async-handler";
 import ApiError from "../../utils/ApiError.js";
 
+// @desc get all comments on post
+// @route /api/v1/post/postId/comment
+// @access public
 export const getAllComments = asyncHandler(async (req, res, next) => {
   const { postId } = req.params;
   const comments = await commentModel.find({ post: postId });
@@ -15,6 +18,9 @@ export const getAllComments = asyncHandler(async (req, res, next) => {
     .json({ message: "success", result: comments.length, data: comments });
 });
 
+// @desc get comment
+// @route /api/v1/comment/commentId
+// @access public
 export const getComment = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
 
@@ -27,6 +33,9 @@ export const getComment = asyncHandler(async (req, res, next) => {
   res.status(200).json({ message: "success", data: comment });
 });
 
+// @desc create comment
+// @route /api/v1/post/postId/comment
+// @access user
 export const createComment = asyncHandler(async (req, res, next) => {
   const { postId } = req.params;
   const { content } = req.body;
@@ -40,6 +49,9 @@ export const createComment = asyncHandler(async (req, res, next) => {
   res.status(201).json({ message: "success", data: newComment });
 });
 
+// @desc update comment
+// @route /api/v1/comment/commentId
+// @access user
 export const updateComment = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const { content } = req.body;
@@ -62,6 +74,9 @@ export const updateComment = asyncHandler(async (req, res, next) => {
   res.status(200).json({ message: "success", data: comment });
 });
 
+// @desc delete comment
+// @route /api/v1/comment/commentId
+// @access user
 export const deleteComment = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
 

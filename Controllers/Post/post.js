@@ -1,6 +1,7 @@
 import postModel from "../../DB/models/postModel.js";
 import asyncHandler from "express-async-handler";
 import ApiError from "../../utils/ApiError.js";
+import cloudinary from "../../utils/cloudinary.js";
 
 // @desc get all posts
 // @route /api/v1/post
@@ -35,7 +36,20 @@ export const getPost = asyncHandler(async (req, res, next) => {
 export const createPost = asyncHandler(async (req, res, next) => {
   const { content } = req.body;
 
-  const newPost = await postModel.create({ content, createdBy: req.user._id });
+  const uploadedImages = await Promise.all(
+    req.files.map(async (file) => {
+      const { secure_url } = await cloudinary.uploader.upload(file.path, {
+        folder: "Post_images",
+      });
+      return secure_url;
+    })
+  );
+
+  const newPost = await postModel.create({
+    content,
+    createdBy: req.user._id,
+    images: uploadedImages,
+  });
   res.status(201).json({ message: "success", data: newPost });
 });
 
@@ -57,6 +71,20 @@ export const updatePost = asyncHandler(async (req, res, next) => {
     return next(
       new ApiError("You are not allowed to perform this action", 401)
     );
+  }
+
+  if (req.files) {
+    const uploadedImages = await Promise.all(
+      req.files.map(async (file) => {
+        const { secure_url } = await cloudinary.uploader.upload(file.path, {
+          folder: "Post_images",
+        });
+        return secure_url;
+      })
+    );
+    post.content = content;
+    post.images = uploadedImages;
+    await post.save();
   }
 
   post.content = content;
