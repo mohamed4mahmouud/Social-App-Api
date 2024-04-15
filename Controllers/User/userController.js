@@ -1,6 +1,7 @@
 import userModel from "../../DB/models/userModel.js";
 import asyncHandler from "express-async-handler";
 import ApiError from "../../utils/ApiError.js";
+import cloudinary from "../../utils/cloudinary.js";
 
 // @desc get all users
 // @route /api/v1/user
@@ -41,26 +42,35 @@ export const getUser = asyncHandler(async (req, res, next) => {
 // @route /api/v1/user/updateprofile
 // @access user
 export const updateUser = asyncHandler(async (req, res, next) => {
-  const { id } = req.user.id;
+  const { id } = req.user;
   const { name, userName, email } = req.body;
 
   if (req.body.password) {
     return next(new ApiError("This route not for change password", 400));
   }
 
-  const updatedUser = await userModel.findByIdAndUpdate(
-    id,
-    { name, userName, email },
-    {
-      new: true,
-    }
-  );
-
-  if (!updatedUser) {
-    return next(new ApiError("User not found", 404));
+  if (req.file) {
+    const { secure_url } = await cloudinary.uploader.upload(req.file.path, {
+      folder: "users",
+    });
+    const updatedUser = await userModel.findByIdAndUpdate(
+      id,
+      { name, userName, email, image: secure_url },
+      {
+        new: true,
+      }
+    );
+    res.status(200).json({ message: "success", data: updatedUser });
+  } else {
+    const updatedUser = await userModel.findByIdAndUpdate(
+      id,
+      { name, userName, email },
+      {
+        new: true,
+      }
+    );
+    res.status(200).json({ message: "success", data: updatedUser });
   }
-
-  res.status(200).json({ message: "success", data: updatedUser });
 });
 
 // @desc delete user

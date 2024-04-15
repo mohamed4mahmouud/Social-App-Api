@@ -5,15 +5,19 @@ import {
   updateUserValidator,
   userIdValidator,
 } from "../utils/validators/userValidators.js";
+import { uploadSingleImage } from "../utils/multer.js";
+
 const router = Router();
 
 router.route("/").get(userController.getAllUsers);
 
-router.use(authController.protect);
+//router.use(authController.protect);
 
 router.put(
   "/updateprofile",
+  authController.protect,
   authController.restrictTo("user"),
+  uploadSingleImage,
   updateUserValidator,
   userController.updateUser
 );

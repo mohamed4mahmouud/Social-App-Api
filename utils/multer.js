@@ -12,3 +12,7 @@ function fileFilter(req, file, cb) {
 }
 
 export const uploadImages = multer({ storage, fileFilter }).array("images");
+
+export const uploadSingleImage = multer({ storage, fileFilter }).single(
+  "image"
+);
