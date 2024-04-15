@@ -2,6 +2,7 @@ import { Router } from "express";
 import * as postController from "../Controllers/Post/post.js";
 import * as authController from "../Controllers/Auth/auth.js";
 import commentRouter from "./comment.routes.js";
+import likeRouter from "./like.routes.js";
 import { uploadImages } from "../utils/multer.js";
 import {
   createPostValidator,
@@ -12,6 +13,7 @@ import {
 const router = Router();
 
 router.use("/:postId/comment", commentRouter);
+router.use("/:postId/like", likeRouter);
 
 router
   .route("/")
