@@ -67,3 +67,23 @@ export const loginValidator = [
   check("password").notEmpty().withMessage("Please provide a password"),
   validatorMiddleware,
 ];
+
+export const changePasswordValidator = [
+  check("password")
+    .notEmpty()
+    .withMessage("Please enter your current password"),
+
+  check("confirmPassword")
+    .notEmpty()
+    .withMessage("Please confirm your password")
+    .custom((val, { req }) => {
+      if (val !== req.body.newPassword) {
+        throw new Error("Passwords do not match");
+      }
+      return true;
+    }),
+
+  check("newPassword").notEmpty().withMessage("Enter your new password"),
+
+  validatorMiddleware,
+];

@@ -110,3 +110,20 @@ export const restrictTo = (...roles) => {
     next();
   });
 };
+
+export const changePassword = asyncHandler(async (req, res, next) => {
+  const { password, newPassword } = req.body;
+
+  const user = await userModel.findById(req.user._id);
+
+  if (!(await bcrypt.compare(password, user.password))) {
+    return next(new ApiError("Your current password is wrong", 401));
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  user.password = hashedPassword;
+  await user.save();
+
+  res.status(200).json({ message: "Password changed successfully", data: user });
+});
