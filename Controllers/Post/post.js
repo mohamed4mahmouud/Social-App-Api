@@ -36,19 +36,26 @@ export const getPost = asyncHandler(async (req, res, next) => {
 export const createPost = asyncHandler(async (req, res, next) => {
   const { content } = req.body;
 
-  const uploadedImages = await Promise.all(
-    req.files.map(async (file) => {
-      const { secure_url } = await cloudinary.uploader.upload(file.path, {
-        folder: "Post_images",
-      });
-      return secure_url;
-    })
-  );
+  if (req.file) {
+    const uploadedImages = await Promise.all(
+      req.files.map(async (file) => {
+        const { secure_url } = await cloudinary.uploader.upload(file.path, {
+          folder: "Post_images",
+        });
+        return secure_url;
+      })
+    );
+    const newPost = await postModel.create({
+      content,
+      createdBy: req.user._id,
+      images: uploadedImages,
+    });
+    res.status(201).json({ message: "success", data: newPost });
+  }
 
   const newPost = await postModel.create({
     content,
     createdBy: req.user._id,
-    images: uploadedImages,
   });
   res.status(201).json({ message: "success", data: newPost });
 });
